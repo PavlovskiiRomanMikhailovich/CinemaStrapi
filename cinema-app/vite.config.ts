@@ -2,7 +2,6 @@ import path from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Используем require вместо import
 const tsconfig = require('./tsconfig.json');
 
 const SRC_PATH = path.resolve(__dirname, 'src');
@@ -11,8 +10,12 @@ const parseTsConfigPaths = (paths: Record<string, string[]>): Record<string, str
   const webpackConfigAliases: Record<string, string> = {};
 
   Object.entries(paths).forEach(([alias, pathsArray]) => {
-    const aliasPath = pathsArray[0].replace(/[^a-zA-Z]/g, '');
-    webpackConfigAliases[alias] = path.join(SRC_PATH, aliasPath);
+    const cleanAlias = alias.replace(/\/\*$/, '');
+    const rawPath = pathsArray[0];
+    const cleanPath = rawPath.replace(/\/\*$/, '');
+    const fullPath = path.join(SRC_PATH, cleanPath);
+    
+    webpackConfigAliases[cleanAlias] = fullPath;
   });
 
   return webpackConfigAliases;
