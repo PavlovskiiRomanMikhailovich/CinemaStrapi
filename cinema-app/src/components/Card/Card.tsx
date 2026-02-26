@@ -2,6 +2,7 @@ import React from 'react';
 import Text from 'components/Text/Text.tsx';
 import Badge from 'components/Badge/Badge.tsx';
 import style from './Card.module.scss';
+import classNames from 'classnames';
 
 export type CardProps = {
     /** Дополнительный classname */
@@ -40,7 +41,7 @@ const Card: React.FC<CardProps> = ({
 }) => {
   return (
     <div
-      className={`${style.card} ${className || ''}`}
+      className={classNames(style.card, className)}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}

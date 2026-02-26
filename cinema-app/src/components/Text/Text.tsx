@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styles from './Text.module.scss' 
+import classNames from 'classnames';
 
 export type TextProps = {
   className?: string;
@@ -23,12 +24,14 @@ const Text: React.FC<TextProps> = ({
   const Component: React.ElementType = tag || 'div';
   
   const classes = [
-    styles.text,
-    view && styles[`text--${view}`],
-    weight && styles[`text--${weight}`],
-    color && styles[`text--${color}`],
-    maxLines && styles['text--clamp'],
-    className,
+    classNames(
+      styles.text,
+      {
+        [styles[`text--${view}`]]: view,
+        [styles[`text--${weight}`]]: weight,
+        [styles[`text--${color}`]]: color,
+        [styles['text--clamp']]: maxLines
+      }, className)
   ].filter(Boolean).join(' ');
 
   const style = maxLines

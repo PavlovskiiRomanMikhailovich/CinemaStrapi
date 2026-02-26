@@ -8,6 +8,7 @@ import Badge from 'components/Badge/Badge.tsx';
 import arrowRight from 'assets/arrow-right.svg'
 import arrowLeft from 'assets/arrow-left.svg'
 import styles from './FilmPage.module.scss';
+import classNames from 'classnames';
 
 const formatDuration = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
@@ -116,7 +117,10 @@ const FilmPage = () => {
           
           <div className={styles['recommendations-carousel']}>
             <button 
-              className={`${styles['carousel-arrow']} ${styles['carousel-arrow--left']}`}
+                className={classNames(
+                    styles['carousel-arrow'],
+                    styles['carousel-arrow--left']
+                )}
               onClick={() => {
                 const container = document.querySelector(`.${styles['recommendations-track']}`);
                 if (container) container.scrollBy({ left: -300, behavior: 'smooth' });
@@ -151,7 +155,10 @@ const FilmPage = () => {
             </div>
 
             <button 
-              className={`${styles['carousel-arrow']} ${styles['carousel-arrow--right']}`}
+                className={classNames(
+                    styles['carousel-arrow'],
+                    styles['carousel-arrow--right']
+                )}
               onClick={() => {
                 const container = document.querySelector(`.${styles['recommendations-track']}`);
                 if (container) container.scrollBy({ left: 300, behavior: 'smooth' });

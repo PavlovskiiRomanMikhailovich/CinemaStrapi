@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Loader.module.scss';
+import classNames from 'classnames';
 
 export type LoaderProps = {
   size?: 's' | 'm' | 'l';
@@ -29,7 +30,7 @@ const Loader: React.FC<LoaderProps> = ({
 
   return (
     <svg
-      className={`${styles.loader} loader--${size} ${className}`}
+      className={classNames(styles.loader, size && `loader--${size}`, className)}
       style={{ color: color || 'var(--loader-bg, #518581)' }}
       width={width}
       height={height}

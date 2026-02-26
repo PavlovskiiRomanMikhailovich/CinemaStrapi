@@ -2797,6 +2797,7 @@ __metadata:
     "@types/react-dom": "npm:^19.2.3"
     "@vitejs/plugin-react": "npm:^5.1.4"
     axios: "npm:^1.13.5"
+    classnames: "npm:^2.5.1"
     eslint: "npm:^10.0.1"
     eslint-plugin-import: "npm:^2.32.0"
     eslint-plugin-prettier: "npm:^5.5.5"
@@ -2815,6 +2816,13 @@ __metadata:
     vite: "npm:^7.3.1"
   languageName: unknown
   linkType: soft
+
+"classnames@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "classnames@npm:2.5.1"
+  checksum: 10c0/afff4f77e62cea2d79c39962980bf316bacb0d7c49e13a21adaadb9221e1c6b9d3cdb829d8bb1b23c406f4e740507f37e1dcf506f7e3b7113d17c5bab787aa69
+  languageName: node
+  linkType: hard
 
 "colorjs.io@npm:^0.5.0":
   version: 0.5.2

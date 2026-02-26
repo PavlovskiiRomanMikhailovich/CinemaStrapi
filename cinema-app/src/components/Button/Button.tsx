@@ -1,6 +1,7 @@
 import React from 'react';
 import Loader from "components/Loader/Loader.tsx";
 import styles from './Button.module.scss';
+import classNames from 'classnames';
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
@@ -18,12 +19,12 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   const isDisabled = disabled || loading;
 
-  const buttonClasses = [
+  const buttonClasses = classNames(
     styles.button,
     styles[`button--${variant}`],
     className,
-    isDisabled ? styles['button--disabled'] : ''
-  ].filter(Boolean).join(' ');
+    { [styles['button--disabled']]: isDisabled }
+  );
 
   return (
     <button

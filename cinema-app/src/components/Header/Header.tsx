@@ -3,6 +3,7 @@ import logo from 'assets/logo.png';
 import bookmarkIcon from 'assets/Bookmark.svg';
 import userIcon from 'assets/user.svg';
 import styles from './Header.module.scss';
+import classNames from 'classnames';
 
 const Header = () => {
   const location = useLocation();
@@ -18,20 +19,29 @@ const Header = () => {
       </div>
       <nav className={styles['header__nav']}>
         <Link 
-          to="/" 
-          className={`${styles['header__link']} ${isActive('/') ? styles['active'] : ''}`}
+        to="/" 
+        className={classNames(
+            styles['header__link'],
+            { [styles['active']]: isActive('/') }
+        )}
         >
           Фильмы
         </Link>
         <Link 
-          to="/new_films" 
-          className={`${styles['header__link']} ${isActive('/new_films') ? styles['active'] : ''}`}
+        to="/new_films" 
+        className={classNames(
+            styles['header__link'],
+            { [styles['active']]: isActive('/new_films') }
+        )}
         >
           Новинки
         </Link>
         <Link 
-          to="/recomendations" 
-          className={`${styles['header__link']} ${isActive('/recomendations') ? styles['active'] : ''}`}
+        to="/recomendations" 
+        className={classNames(
+            styles['header__link'],
+            { [styles['active']]: isActive('/recomendations') }
+        )}
         >
           Подборки
         </Link>
