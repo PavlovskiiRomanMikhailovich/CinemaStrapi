@@ -9,16 +9,7 @@ import arrowRight from 'assets/arrow-right.svg'
 import arrowLeft from 'assets/arrow-left.svg'
 import styles from './FilmPage.module.scss';
 import classNames from 'classnames';
-
-const formatDuration = (minutes: number): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours}h ${mins}m`;
-};
-
-const formatAgeLimit = (age: number): string => {
-  return `${age}+`;
-};
+import { formatAgeLimit, formatDuration } from 'utils/dataFromat';
 
 const FilmPage = () => {
   const { documentId } = useParams<{ documentId: string }>();

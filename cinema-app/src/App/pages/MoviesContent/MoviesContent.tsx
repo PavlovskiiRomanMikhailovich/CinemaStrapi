@@ -5,21 +5,12 @@ import Text from 'components/Text/Text.tsx';
 import Button from 'components/Button/Button.tsx';
 import { getFilms, type Film } from '../../../api/filmsApi';
 import styles from './MoviesContent.module.scss';
+import { formatAgeLimit, formatDuration } from 'utils/dataFromat';
 
 interface MoviesContentProps {
   title: string;
   category: 'home' | 'new_films' | 'recomendations';
 }
-
-const formatDuration = (minutes: number): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours}h ${mins}m`;
-};
-
-const formatAgeLimit = (age: number): string => {
-  return `${age}+`;
-};
 
 const MoviesContent = ({ title, category }: MoviesContentProps) => {
   const navigate = useNavigate();
