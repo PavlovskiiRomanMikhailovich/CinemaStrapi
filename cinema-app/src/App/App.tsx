@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from 'components/Header/Header.jsx';
-import MoviesContent from 'App/pages/MoviesContent/MoviesContent';
-import FilmPage from 'App/pages/FilmPage/FilmPage';
+import { ROUTES_CONFIG } from 'config/routes.config';
 
 function App() {
   return (
@@ -9,10 +8,13 @@ function App() {
       <Header />
       <main>
         <Routes>
-          <Route path="/" element={<MoviesContent title="Фильмы" category="home" />} />
-          <Route path="/new_films" element={<MoviesContent title="Новинки" category="new_films" />} />
-          <Route path="/recomendations" element={<MoviesContent title="Подборки" category="recomendations" />} />
-          <Route path="/film/:documentId" element={<FilmPage />} />
+          {ROUTES_CONFIG.map((route) => (
+            <Route
+              key={route.path}
+              path={route.path}
+              element={route.element}
+            />
+          ))}
         </Routes>
       </main>
     </BrowserRouter>
