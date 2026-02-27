@@ -13,7 +13,8 @@
       "config/*": ["src/config/*"],
       "styles/*": ["src/styles/*"],
       "utils/*": ["src/utils/*"],
-      "App/*": ["src/App/*"]
+      "App/*": ["src/App/*"],
+      "api/*": ["src/api/*"]
     }
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getFilmById, getFilms, type Film } from '../../../api/filmsApi';
+import { type Film, getFilms, type StrapiResponse, getFilmById } from 'api/filmsApi';
 import Text from 'components/Text/Text.tsx';
 import Button from 'components/Button/Button.tsx';
 import Card from 'components/Card/Card.tsx';
@@ -26,10 +26,10 @@ const FilmPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const filmResponse = await getFilmById(documentId);
+        const filmResponse: StrapiResponse<Film> = await getFilmById(documentId);
         setFilm(filmResponse.data);
         
-        const allFilmsResponse = await getFilms();
+        const allFilmsResponse: StrapiResponse<Film[]> = await getFilms();
         const otherFilms = allFilmsResponse.data
           .filter(f => f.documentId !== documentId)
           .slice(0, 6);

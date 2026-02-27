@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Card from 'components/Card/Card.tsx';
 import Text from 'components/Text/Text.tsx';
 import Button from 'components/Button/Button.tsx';
-import { getFilms, type Film } from '../../../api/filmsApi';
 import styles from './MoviesContent.module.scss';
 import { formatAgeLimit, formatDuration, isTruthy } from 'utils/dataFromat';
+import { getFilms, type Film, type StrapiResponse } from 'api/filmsApi';
 
 interface MoviesContentProps {
   title: string;
@@ -24,7 +24,7 @@ const MoviesContent = ({ title, category }: MoviesContentProps) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await getFilms();
+        const response: StrapiResponse<Film[]> = await getFilms();
         setFilms(response.data);
         setTotal(response.meta.pagination.total);
       } catch (err) {
@@ -58,17 +58,6 @@ const MoviesContent = ({ title, category }: MoviesContentProps) => {
           ]
             .filter(isTruthy)
             .join('  •  ');
-          
-          const contentSlot = (
-            <div className={styles["card-footer-content"]}>
-              <Text view="p-18" weight="normal" color="accent">
-                ★ {film.rating.toFixed(1)}
-              </Text>
-              <Text view="p-14" color="secondary">
-                {formatDuration(film.duration)}
-              </Text>
-            </div>
-          );
 
           const actionSlot = (
             <div className={styles["card-actions"]}>
@@ -102,7 +91,6 @@ const MoviesContent = ({ title, category }: MoviesContentProps) => {
               rating={film.rating} 
               duration={film.duration}
               subtitle={film.shortDescription || film.description}
-              contentSlot={contentSlot}
               actionSlot={actionSlot}
               onClick={() => handleCardClick(film.documentId)}
             />

@@ -50,12 +50,27 @@ export interface Film {
   trailerUrl: string;
 }
 
-export interface FilmResponse {
-  data: Film;
+export interface StrapiResponse<T> {
+  data: T;
   meta: {};
 }
 
-export const getFilms = async (params = {}): Promise<FilmResponse> => {
+export type FilmResponse = StrapiResponse<Film>;
+export type FilmsResponse = StrapiResponse<Film[]>;
+
+export const getFilmById = async (documentId: string): Promise<FilmResponse> => {
+  try {
+    const response = await apiClient.get(`/films/${documentId}`, { 
+      params: POPULATE_CONFIG 
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching film ${documentId}:`, error);
+    throw error;
+  }
+};
+
+export const getFilms = async (params = {}): Promise<FilmsResponse> => {
   try {
     const queryParams = {
       ...POPULATE_CONFIG,
@@ -66,18 +81,6 @@ export const getFilms = async (params = {}): Promise<FilmResponse> => {
     return response.data;
   } catch (error) {
     console.error('Error fetching films:', error);
-    throw error;
-  }
-};
-
-export const getFilmById = async (documentId: string): Promise<FilmResponse> => {
-  try {
-    const response = await apiClient.get(`/films/${documentId}`, { 
-      params: POPULATE_CONFIG 
-    });
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching film ${documentId}:`, error);
     throw error;
   }
 };
