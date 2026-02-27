@@ -7,3 +7,7 @@ export const formatDuration = (minutes: number): string => {
 export const formatAgeLimit = (age: number): string => {
   return `${age}+`;
 };
+
+export const isTruthy = <T>(value: T | undefined | null | false): value is T => {
+  return value !== undefined && value !== null && value !== false;
+};

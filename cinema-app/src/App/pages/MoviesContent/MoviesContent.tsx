@@ -5,7 +5,7 @@ import Text from 'components/Text/Text.tsx';
 import Button from 'components/Button/Button.tsx';
 import { getFilms, type Film } from '../../../api/filmsApi';
 import styles from './MoviesContent.module.scss';
-import { formatAgeLimit, formatDuration } from 'utils/dataFromat';
+import { formatAgeLimit, formatDuration, isTruthy } from 'utils/dataFromat';
 
 interface MoviesContentProps {
   title: string;
@@ -56,7 +56,7 @@ const MoviesContent = ({ title, category }: MoviesContentProps) => {
             film.category?.title,
             formatAgeLimit(film.ageLimit)
           ]
-            .filter(Boolean)
+            .filter(isTruthy)
             .join('  •  ');
           
           const contentSlot = (

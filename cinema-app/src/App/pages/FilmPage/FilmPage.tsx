@@ -9,7 +9,7 @@ import arrowRight from 'assets/arrow-right.svg'
 import arrowLeft from 'assets/arrow-left.svg'
 import styles from './FilmPage.module.scss';
 import classNames from 'classnames';
-import { formatAgeLimit, formatDuration } from 'utils/dataFromat';
+import { formatAgeLimit, formatDuration, isTruthy } from 'utils/dataFromat';
 
 const FilmPage = () => {
   const { documentId } = useParams<{ documentId: string }>();
@@ -58,7 +58,7 @@ const FilmPage = () => {
     film.releaseYear,
     film.category?.title,
     formatAgeLimit(film.ageLimit)
-  ].filter(Boolean).join(' • ');
+  ].filter(isTruthy).join(' • ');
 
   return (
     <div className={styles['film-page']}>
@@ -127,7 +127,7 @@ const FilmPage = () => {
                   film.releaseYear,
                   film.category?.title,
                   formatAgeLimit(film.ageLimit)
-                ].filter(Boolean).join(' • ');
+                ].filter(isTruthy).join(' • ');
 
                 return (
                   <div key={film.documentId} className={styles['recommendations-item']}>

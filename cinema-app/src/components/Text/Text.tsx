@@ -1,6 +1,7 @@
 import * as React from 'react';
 import styles from './Text.module.scss' 
 import classNames from 'classnames';
+import { isTruthy } from 'utils/dataFromat';
 
 export type TextProps = {
   className?: string;
@@ -32,7 +33,7 @@ const Text: React.FC<TextProps> = ({
         [styles[`text--${color}`]]: color,
         [styles['text--clamp']]: maxLines
       }, className)
-  ].filter(Boolean).join(' ');
+  ].filter(isTruthy).join(' ');
 
   const style = maxLines
     ? { WebkitLineClamp: maxLines }
