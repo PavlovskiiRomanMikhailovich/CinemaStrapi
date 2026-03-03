@@ -55,6 +55,12 @@
   gap: $spacing-3xl;
 }
 
+.noMore {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+}
+
 @include tablet {
   .movies-content {
     padding: $spacing-xl $spacing-lg;

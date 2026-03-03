@@ -14,7 +14,9 @@
       "styles/*": ["src/styles/*"],
       "utils/*": ["src/utils/*"],
       "App/*": ["src/App/*"],
-      "api/*": ["src/api/*"]
+      "api/*": ["src/api/*"],
+      "stores/*": ["src/stores/*"],
+      "hooks/*": ["src/hooks/*"]
     }
   }
 }

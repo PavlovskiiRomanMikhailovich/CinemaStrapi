@@ -90,7 +90,6 @@ export const getFilms = async (params: FilmsQueryParams = {}): Promise<FilmsResp
       ...POPULATE_CONFIG,
     };
 
-    // Добавляем пагинацию
     if (params.page || params.pageSize) {
       queryParams.pagination = {
         page: params.page || 1,
