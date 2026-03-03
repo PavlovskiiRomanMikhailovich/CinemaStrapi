@@ -4,6 +4,9 @@
   padding: $spacing-4xl $spacing-xl;
   max-width: $max-width-content;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
 }
 
 .movies-header {
@@ -44,6 +47,12 @@
 .card-actions button {
   flex: 1;
   min-width: 100px;
+}
+
+.serch-container {
+  display: flex;
+  height: 45px;
+  gap: $spacing-3xl;
 }
 
 @include tablet {

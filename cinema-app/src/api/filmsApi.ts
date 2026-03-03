@@ -52,11 +52,25 @@ export interface Film {
 
 export interface StrapiResponse<T> {
   data: T;
-  meta: {};
+  meta: {
+    pagination: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    }
+  };
 }
 
 export type FilmResponse = StrapiResponse<Film>;
 export type FilmsResponse = StrapiResponse<Film[]>;
+
+export interface FilmsQueryParams {
+  search?: string;
+  categoryIds?: number[];
+  page?: number;
+  pageSize?: number;
+}
 
 export const getFilmById = async (documentId: string): Promise<FilmResponse> => {
   try {
@@ -70,17 +84,54 @@ export const getFilmById = async (documentId: string): Promise<FilmResponse> => 
   }
 };
 
-export const getFilms = async (params = {}): Promise<FilmsResponse> => {
+export const getFilms = async (params: FilmsQueryParams = {}): Promise<FilmsResponse> => {
   try {
-    const queryParams = {
+    const queryParams: any = {
       ...POPULATE_CONFIG,
-      ...params,
     };
+
+    // Добавляем пагинацию
+    if (params.page || params.pageSize) {
+      queryParams.pagination = {
+        page: params.page || 1,
+        pageSize: params.pageSize || 12,
+      };
+    }
+
+    const filters: any = {};
+
+    if (params.search) {
+      filters.title = {
+        $contains: params.search
+      };
+    }
+
+    if (params.categoryIds && params.categoryIds.length > 0) {
+      filters.category = {
+        id: {
+          $in: params.categoryIds
+        }
+      };
+    }
+
+    if (Object.keys(filters).length > 0) {
+      queryParams.filters = filters;
+    }
     
     const response = await apiClient.get('/films', { params: queryParams });
     return response.data;
   } catch (error) {
     console.error('Error fetching films:', error);
+    throw error;
+  }
+};
+
+export const getCategories = async (): Promise<StrapiResponse<Category[]>> => {
+  try {
+    const response = await apiClient.get('/film-categories');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching categories:', error);
     throw error;
   }
 };
