@@ -1,109 +1,117 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 import Card from 'components/Card/Card.tsx';
 import Text from 'components/Text/Text.tsx';
 import Button from 'components/Button/Button.tsx';
 import styles from './MoviesContent.module.scss';
-import { formatAgeLimit, formatDuration, isTruthy } from 'utils/dataFromat';
-import { getFilms, getCategories, type Film, type StrapiResponse, type Category } from 'api/filmsApi';
-import Input, {type InputRef} from 'components/Input/Input';
-import Dropdown, {type DropdownOption} from 'components/Dropdow/Dropdow';
+import { formatAgeLimit, isTruthy } from 'utils/dataFromat';
+import Input from 'components/Input/Input';
+import Dropdown from 'components/Dropdow/Dropdow';
+import { useFilmsStore, useCategoriesStore, useFavoritesStore } from 'hooks/useStores';
 
 interface MoviesContentProps {
   title: string;
   category: 'home' | 'new_films' | 'recomendations';
 }
 
-const MoviesContent = ({ title, category }: MoviesContentProps) => {
+const MoviesContent = observer(({ title, category }: MoviesContentProps) => {
   const navigate = useNavigate();
-  const [films, setFilms] = useState<Film[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [total, setTotal] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
   
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const filmsStore = useFilmsStore();
+  const categoriesStore = useCategoriesStore();
+  const favoritesStore = useFavoritesStore();
   
   const [tempSearchQuery, setTempSearchQuery] = useState('');
-  const [tempSelectedCategories, setTempSelectedCategories] = useState<string[]>([]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await getCategories();
-        setCategories(response.data);
-      } catch (err) {
-        console.error('Failed to fetch categories:', err);
-      }
-    };
-    fetchCategories();
+    categoriesStore.fetchCategories();
   }, []);
 
   useEffect(() => {
-    fetchFilms();
-  }, [category]);
-
-  const fetchFilms = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const params: any = {};
-      
-      const response: StrapiResponse<Film[]> = await getFilms(params);
-      setFilms(response.data);
-      setTotal(response.meta.pagination.total);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch films');
-    } finally {
-      setLoading(false);
+    if (favoritesStore.favorites.length === 0) {
+      favoritesStore.fetchFavorites();
     }
+  }, []);
+
+  useEffect(() => {
+    const search = searchParams.get('search') || '';
+    const categories = searchParams.getAll('category');
+    
+    setTempSearchQuery(search);
+    categoriesStore.setTempSelectedCategories(categories);
+    categoriesStore.setSelectedCategories(categories);
+    
+    filmsStore.reset();
+    filmsStore.fetchFilms({ 
+      search, 
+      categoryIds: categories.map(Number),
+      page: 1 
+    });
+  }, []);
+
+  const handleSearch = async () => {
+    categoriesStore.applySelection();
+    
+    const newSearchParams = new URLSearchParams();
+    if (tempSearchQuery) {
+      newSearchParams.set('search', tempSearchQuery);
+    }
+    categoriesStore.selectedCategories.forEach(cat => {
+      newSearchParams.append('category', cat);
+    });
+    setSearchParams(newSearchParams);
+    
+    filmsStore.reset();
+    await filmsStore.fetchFilms({ 
+      search: tempSearchQuery, 
+      categoryIds: categoriesStore.selectedCategoryIds,
+      page: 1 
+    });
   };
 
-const handleSearch = async () => {
-  setLoading(true);
-  setError(null);
-  try {
-    const params: any = {};
+  const lastFilmRef = useCallback((node: HTMLDivElement) => {
+    if (filmsStore.loading || filmsStore.loadingMore) return;
     
-    if (tempSearchQuery) {
-      params.search = tempSearchQuery;
-    }
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && filmsStore.hasMore) {
+        filmsStore.loadMore({
+          search: tempSearchQuery,
+          categoryIds: categoriesStore.selectedCategoryIds
+        });
+      }
+    });
     
-    if (tempSelectedCategories.length > 0) {
-      params.categoryIds = tempSelectedCategories.map(id => Number(id));
-    }
-
-    setSearchQuery(tempSearchQuery);
-    setSelectedCategories(tempSelectedCategories);
-    
-    const response: StrapiResponse<Film[]> = await getFilms(params);
-    setFilms(response.data);
-    setTotal(response.meta.pagination.total);
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Failed to fetch films');
-  } finally {
-    setLoading(false);
-  }
-};
-
+    if (node) observer.observe(node);
+  }, [filmsStore.loading, filmsStore.loadingMore, filmsStore.hasMore]);
 
   const handleCardClick = (documentId: string) => {
     navigate(`/film/${documentId}`);
   };
 
-  if (loading && films.length === 0) return <div className="loading">Загрузка фильмов...</div>;
-  if (error) return <div className="error">Ошибка: {error}</div>;
+  const handleFavoriteClick = async (e: React.MouseEvent, filmId: number, isFavorite: boolean) => {
+    e.stopPropagation();
+    if (isFavorite) {
+      await favoritesStore.removeFromFavorites(filmId);
+    } else {
+      await favoritesStore.addToFavorites(filmId);
+    }
+  };
 
-  const categoryOptions: DropdownOption[] = categories.map(cat => ({
-    value: cat.id.toString(),
-    label: cat.title
-  }));
+  if (filmsStore.loading && filmsStore.films.length === 0) {
+    return <div className="loading">Загрузка фильмов...</div>;
+  }
+  
+  if (filmsStore.error) {
+    return <div className="error">Ошибка: {filmsStore.error}</div>;
+  }
 
   return (
     <div className={styles["movies-content"]}>
       <div className={styles["serch-container"]}>
         <Input 
+          value={tempSearchQuery}
           onChange={(e) => setTempSearchQuery(e.target.value)}
           placeholder="Поиск по названию"
         />
@@ -111,16 +119,19 @@ const handleSearch = async () => {
           Найти
         </Button>
       </div>
+      
       <Dropdown
-        options={categoryOptions}
-        value={tempSelectedCategories}
-        onChange={(selected) => setTempSelectedCategories(selected)}
+        options={categoriesStore.categoryOptions}
+        value={categoriesStore.tempSelectedCategories}
+        onChange={(selected) => categoriesStore.setTempSelectedCategories(selected)}
         placeholder="Фильтры"
         multiple
       />
+      
       <Text className={styles['movies-header']} color='primary' tag='h1'>{title}</Text>
+      
       <div className={styles["movies-grid"]}>
-        {films.map(film => {
+        {filmsStore.films.map((film, index) => {
           const posterUrl = film.poster?.formats?.small?.url || film.poster?.url || '';
           
           const infoString = [
@@ -131,16 +142,15 @@ const handleSearch = async () => {
             .filter(isTruthy)
             .join('  •  ');
 
+          const isFavorite = favoritesStore.isFavorite(film.id);
+
           const actionSlot = (
             <div className={styles["card-actions"]}>
               <Button 
-                variant='outline'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log('В избранное:', film.title);
-                }}
+                variant={isFavorite ? 'filled' : 'outline'}
+                onClick={(e) => handleFavoriteClick(e, film.id, isFavorite)}
               >
-                В избранное
+                {isFavorite ? 'В избранном' : 'В избранное'}
               </Button>
               <Button 
                 variant='filled'
@@ -154,23 +164,37 @@ const handleSearch = async () => {
             </div>
           );
 
+          const isLastElement = index === filmsStore.films.length - 1;
+          
           return (
-            <Card
+            <div
               key={film.documentId}
-              image={posterUrl}
-              captionSlot={infoString}
-              title={film.title}
-              rating={film.rating} 
-              duration={film.duration}
-              subtitle={film.shortDescription || film.description}
-              actionSlot={actionSlot}
-              onClick={() => handleCardClick(film.documentId)}
-            />
+              ref={isLastElement ? lastFilmRef : null}
+            >
+              <Card
+                image={posterUrl}
+                captionSlot={infoString}
+                title={film.title}
+                rating={film.rating} 
+                duration={film.duration}
+                subtitle={film.shortDescription || film.description}
+                actionSlot={actionSlot}
+                onClick={() => handleCardClick(film.documentId)}
+              />
+            </div>
           );
         })}
       </div>
+      
+      {filmsStore.loadingMore && (
+        <div className={styles.loadingMore}>Загрузка...</div>
+      )}
+      
+      {!filmsStore.hasMore && filmsStore.films.length > 0 && (
+        <div className={styles.noMore}>Больше фильмов нет</div>
+      )}
     </div>
   );
-};
+});
 
 export default MoviesContent;

@@ -47,7 +47,7 @@ const Header = () => {
         </Link>
       </nav>
       <div className={styles['icons-container']}>
-        <img src={bookmarkIcon}/>
+        <Link to="/favorites"><img src={bookmarkIcon}/></Link>
         <img src={userIcon}/>
       </div>
     </header>
