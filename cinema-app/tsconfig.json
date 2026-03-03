@@ -5,12 +5,16 @@
     { "path": "./tsconfig.node.json" }
   ],
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "components": ["components/*"],
-      "config": ["config/*"],
-      "styles": ["styles/*"],
-      "utils": ["utils/*"]
+      "@/*": ["src/*"],
+      "assets/*": ["src/assets/*"],
+      "components/*": ["src/components/*"],
+      "config/*": ["src/config/*"],
+      "styles/*": ["src/styles/*"],
+      "utils/*": ["src/utils/*"],
+      "App/*": ["src/App/*"],
+      "api/*": ["src/api/*"]
     }
   }
 }

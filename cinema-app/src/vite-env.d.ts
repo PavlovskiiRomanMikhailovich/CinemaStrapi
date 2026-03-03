@@ -1,3 +1,11 @@
 /// <reference types="vite/client" />
-/// <reference types="react" />
-/// <reference types="react-dom" />
+
+declare module 'assets/*' {
+  const src: string;
+  export default src;
+}
+
+declare module '*.svg' {
+  const src: string;
+  export default src;
+}
