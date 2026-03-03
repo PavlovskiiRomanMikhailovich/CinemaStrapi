@@ -37,9 +37,6 @@ const FavoritesPage = observer(() => {
       <div className={styles.empty}>
         <Text tag="h1" color="primary">Избранное</Text>
         <Text color="secondary">У вас пока нет избранных фильмов</Text>
-        <Button variant="filled" onClick={() => navigate('/')}>
-          На главную
-        </Button>
       </div>
     );
   }
